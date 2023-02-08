@@ -214,8 +214,9 @@ def load_model(root, load_on_run_all=True, check_sha256=True):
         except:
             print("..could not verify model integrity")
 
-    def load_model_from_config(config, ckpt, verbose=False, device='cuda', print_flag=False):
-        map_location = "cuda" # ["cpu", "cuda"]
+    def load_model_from_config(config, ckpt, verbose=False, device='mps', print_flag=True):
+        # Yang: updated from "cuda" for Mac M1
+        map_location = "mps" # ["cpu", "cuda", "mps"]
         print(f"..loading model")
         _ , extension = os.path.splitext(ckpt)
         if extension.lower() == ".safetensors":
@@ -246,10 +247,13 @@ def load_model(root, load_on_run_all=True, check_sha256=True):
     if load_on_run_all and ckpt_valid:
         local_config = OmegaConf.load(f"{ckpt_config_path}")
         model = load_model_from_config(local_config, f"{ckpt_path}")
-        device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        device = torch.device("cuda") if torch.cuda.is_available() else torch.device("mps") # Yang updated from "cpu" to "mps"
         model = model.to(device)
 
     autoencoder_version = "sd-v1" #TODO this will be different for different models
+
+    print("Current Device: ",device)
+
     model.linear_decode = make_linear_decode(autoencoder_version, device)
 
     return model, device

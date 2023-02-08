@@ -97,7 +97,7 @@ def main():
                                         load_on_run_all=True
                                         , 
                                         check_sha256=False
-                                        )
+                                         )
 
     def DeforumAnimArgs():
 
